@@ -1,0 +1,37 @@
+
+
+{% extends "base.html" %}
+{% block title %}Sponsor Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-md-6">
+            <h2>My Campaigns</h2>
+            <ul class="list-group">
+                {% for campaign in campaigns %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('campaign_detail', campaign_id=campaign.id) }}">{{ campaign.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+            <a class="btn btn-primary mt-3" href="{{ url_for('create_campaign') }}">Create New Campaign</a>
+        </div>
+        <!-- Right Column -->
+        <div class="col-md-6">
+            <h2>Ad Requests</h2>
+            <ul class="list-group">
+                {% for ad_request in ad_requests %}
+                <li class="list-group-item">
+                    <strong>Campaign:</strong> {{ ad_request.campaign.name }}<br>
+                    <strong>Influencer:</strong> {{ ad_request.influencer.username }}<br>
+                    <strong>Status:</strong> {{ ad_request.status }}<br>
+                    <a href="{{ url_for('ad_request_detail', ad_request_id=ad_request.id) }}">View Details</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

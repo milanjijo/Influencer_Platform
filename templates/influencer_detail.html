@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Influencer Details{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h2 class="card-title">{{ influencer.name }}</h2>
+                </div>
+                <div class="card-body">
+                    <p><strong>Category:</strong> {{ influencer.category }}</p>
+                    <p><strong>Niche:</strong> {{ influencer.niche }}</p>
+                    <p><strong>Reach:</strong> {{ influencer.reach }}</p>
+                    <p><strong>Contact:</strong> {{ influencer.user.email }}</p>
+                    <!-- Add more influencer details if needed -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

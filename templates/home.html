@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="display-4 text-center text-white">Welcome to the Influencer Engagement Platform</h1>
+                    <p class="lead text-center text-white">Connecting sponsors with influencers for effective advertising campaigns.</p>
+                    <hr class="my-4 bg-white">
+                    <p class="text-center text-white">Login to get started.</p>
+                    <div class="text-center">
+                        <a class="btn btn-primary btn-lg mx-2" href="{{ url_for('login') }}" role="button">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

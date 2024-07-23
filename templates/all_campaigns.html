@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}All Campaigns{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>All Campaigns</h2>
+    <a class="btn btn-primary" href="{{ url_for('new_campaign') }}">Create New Campaign</a>
+    <!-- List of all campaigns -->
+</div>
+{% endblock %}

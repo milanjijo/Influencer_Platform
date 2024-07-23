@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Ad Request Details{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Ad Request Details</h2>
+    <p>{{ ad_request.details }}</p>
+    <p>Payment Amount: {{ ad_request.payment_amount }}</p>
+    <p>Status: {{ ad_request.status }}</p>
+    <!-- Actions for ad request -->
+</div>
+{% endblock %}
