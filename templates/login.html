@@ -10,15 +10,18 @@
         <div class="card-body">
           <h5 class="card-title text-center text-white">Login</h5>
           <form method="POST">
+            {{ form.hidden_tag() }}
             <div class="mb-3">
-              <label for="username" class="form-label">Username</label>
-              <input type="text" class="form-control" id="username" name="username" required>
+                {{ form.username.label(class="form-label") }}
+                {{ form.username(class="form-control", id="username") }}
             </div>
             <div class="mb-3">
-              <label for="password" class="form-label">Password</label>
-              <input type="password" class="form-control" id="password" name="password" required>
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control", id="password") }}
             </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <div class="mb-3">
+                {{ form.submit(class="btn btn-primary w-100") }}
+            </div>
           </form>
         </div>
         <a class="btn btn-link" href="{{ url_for('influencer_register') }}">Register as Influencer</a>

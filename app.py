@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user, logout_user, login_required
 from config import Config
-from models import db, User, Campaign, AdRequest,Sponsor,Influencer
+from models import *
 from forms import SponsorRegistrationForm,InfluencerRegistrationForm, LoginForm, CampaignForm
 
 app = Flask(__name__)
@@ -14,8 +14,9 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
+# Load user callback for Flask-Login
 @login_manager.user_loader
-def load_user(user_id): 
+def load_user(user_id):
     return User.query.get(int(user_id))
 
 @app.route("/")
@@ -23,6 +24,53 @@ def load_user(user_id):
 def home():
     return render_template('home.html')
 
+# Login route
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        # Get the form data
+        username = form.username.data
+        password = form.password.data
+
+        # Find the user by username
+        user = User.query.filter_by(username=username).first()
+
+        # Use bcrypt to compare hashed password
+        if user and bcrypt.check_password_hash(user.password, password):
+            # Log the user in
+            login_user(user)
+            # Redirect based on role
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid username or password', 'danger')
+
+    return render_template('login.html', form=form)
+
+# Dashboard route
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    if current_user.is_authenticated:
+        if current_user.role == 'Admin':
+            return render_template('admin_dashboard.html')
+        elif current_user.role == 'Sponsor':
+            return render_template('sponsor_dashboard.html')
+        elif current_user.role == 'Influencer':
+            return render_template('influencer_dashboard.html')
+    return redirect(url_for('home'))
+
+@app.route('/profile')
+@login_required
+def profile():
+    if current_user.is_authenticated:
+        if current_user.role == 'Admin':
+            return render_template('admin_profile.html')
+        elif current_user.role == 'Sponsor':
+            return render_template('sponsor_profile.html')
+        elif current_user.role == 'Influencer':
+            return render_template('influencer_profile.html')
+    return redirect(url_for('home'))
 
 @app.route("/register/sponsor", methods=['GET', 'POST'])
 def sponsor_register():
@@ -54,43 +102,11 @@ def influencer_register():
         return redirect(url_for('login'))
     return render_template('influencer_register.html', title='Register Influencer', form=form)
 
-
-@app.route('/admin_login', methods=['GET', 'POST'])
-def admin_login():
-    if request.method == 'POST':
-        # Handle admin login logic
-        username = request.form['username']
-        password = request.form['password']
-        # Validate credentials and redirect
-        return redirect(url_for('dashboard'))
-    return render_template('admin_login.html')
-
-@app.route('/login', methods=['GET', 'POST'])
-def sponsor_login():
-    if request.method == 'POST':
-        # Handle sponsor login logic
-        username = request.form['username']
-        password = request.form['password']
-        # Validate credentials and redirect
-        return redirect(url_for('dashboard'))    # add conditions to identify if we need to redirect to sponsor dashbord or influence dashboard
-    return render_template('login.html')
-
 @app.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for('home'))
 
-@app.route("/dashboard")
-# @login_required
-def dashboard():
-    if current_user.role == 'Admin':
-        return render_template('admin_dashboard.html')
-    elif current_user.role == 'Sponsor':
-        return render_template('sponsor_dashboard.html')
-    elif current_user.role == 'Influencer':
-        return render_template('influencer_dashboard.html')
-    else:
-        return redirect(url_for('home'))
 
 @app.route("/campaign/new", methods=['GET', 'POST'])
 @login_required
@@ -237,15 +253,6 @@ def stats_overview():
 #         # Handle login logic
 #         return redirect(url_for('admin_dashboard'))
 #     return render_template('admin_login.html', form=form)
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        # Handle login logic
-        return redirect(url_for('dashboard'))
-    return render_template('login.html', form=form)
-
 
 # @app.route('/campaigns/new', methods=['GET', 'POST'])
 # def new_campaign():
