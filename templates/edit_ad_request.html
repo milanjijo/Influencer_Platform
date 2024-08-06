@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Ad Request{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4">Edit Ad Request</h1>
+    <div class="card my-4">
+        <div class="card-body">
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.influencer_id.label(class="form-control-label") }}
+                    {{ form.influencer_id(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.requirements.label(class="form-control-label") }}
+                    {{ form.requirements(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.payment_amount.label(class="form-control-label") }}
+                    {{ form.payment_amount(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.status.label(class="form-control-label") }}
+                    {{ form.status(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

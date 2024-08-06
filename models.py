@@ -53,3 +53,15 @@ class AdRequest(db.Model):
     requirements = db.Column(db.Text, nullable=False)
     payment_amount = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(20), nullable=False, default='Pending')
+
+class AdRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    campaign_id = db.Column(db.Integer, db.ForeignKey('campaign.id'), nullable=False)
+    influencer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    requirements = db.Column(db.Text, nullable=False)
+    payment_amount = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(50), nullable=False)  # e.g., Pending, Accepted, Rejected
+    message = db.Column(db.Text)  # Field for negotiation messages
+
+    campaign = db.relationship('Campaign', backref='ad_requests')
+    influencer = db.relationship('Influencer', backref='ad_requests')

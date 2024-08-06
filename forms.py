@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField, DateTimeField, FloatField
+from wtforms import IntegerField, StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField, DateTimeField, FloatField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 
 
@@ -39,3 +39,14 @@ class CampaignForm(FlaskForm):
     visibility = SelectField('Visibility', choices=[('Public', 'Public'), ('Private', 'Private')], validators=[DataRequired()])
     goals = TextAreaField('Goals', validators=[DataRequired()])
     submit = SubmitField('Create Campaign')
+
+class AdRequestForm(FlaskForm):
+    influencer_id = IntegerField('Influencer ID', validators=[DataRequired()])
+    requirements = TextAreaField('Requirements', validators=[DataRequired()])
+    payment_amount = FloatField('Payment Amount', validators=[DataRequired()])
+    status = SelectField('Status', choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected'),('Completed', 'completed')], validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+class InfluencerSearchForm(FlaskForm):
+    search_query = StringField('Search', validators=[DataRequired()])
+    submit = SubmitField('Search')

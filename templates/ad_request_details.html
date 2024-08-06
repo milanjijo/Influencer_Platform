@@ -1,11 +1,28 @@
 {% extends "base.html" %}
+
 {% block title %}Ad Request Details{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <h2>Ad Request Details</h2>
-    <p>{{ ad_request.details }}</p>
-    <p>Payment Amount: {{ ad_request.payment_amount }}</p>
-    <p>Status: {{ ad_request.status }}</p>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Ad Request ID: {{ ad_request.id }}</h5>
+            <p><strong>Campaign:</strong> {{ ad_request.campaign.title }}</p>
+            <p><strong>Influencer ID:</strong> {{ ad_request.influencer_id }}</p>
+            <p><strong>Requirements:</strong></p>
+            <p>{{ ad_request.requirements }}</p>
+            <p><strong>Payment Amount:</strong> ${{ ad_request.payment_amount }}</p>
+            <p><strong>Status:</strong> {{ ad_request.status }}</p>
+        </div>
+    </div>
+    
     <!-- Actions for ad request -->
+    <div class="d-flex justify-content-between">
+        <a href="{{ url_for('edit_ad_request', ad_request_id=ad_request.id) }}" class="btn btn-secondary">Edit</a>
+        <form action="{{ url_for('delete_ad_request', ad_request_id=ad_request.id) }}" method="POST">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    </div>
 </div>
 {% endblock %}

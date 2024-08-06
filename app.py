@@ -202,14 +202,111 @@ def ad_request_detail(ad_request_id):
     if ad_request.sponsor_id != current_user.id:
         flash('Access denied!', 'danger')
         return redirect(url_for('sponsor_dashboard'))
-    
     return render_template('ad_request_detail.html', ad_request=ad_request)
 
+@app.route('/sponsor/ad_request/<int:ad_request_id>/edit', methods=['GET', 'POST'])
+def edit_ad_request(ad_request_id):
+    ad_request = AdRequest.query.get_or_404(ad_request_id)
+    form = AdRequestForm(obj=ad_request)
+    if form.validate_on_submit():
+        ad_request.influencer_id = form.influencer_id.data
+        ad_request.requirements = form.requirements.data
+        ad_request.payment_amount = form.payment_amount.data
+        ad_request.status = form.status.data
+        db.session.commit()
+        flash('Ad request updated successfully.', 'success')
+        return redirect(url_for('ad_request_detail', ad_request_id=ad_request_id))
+    return render_template('edit_ad_request.html', form=form, ad_request=ad_request)
 
-@app.route('/influencer/dashboard')
+@app.route('/sponsor/ad_request/<int:ad_request_id>/delete', methods=['POST'])
+def delete_ad_request(ad_request_id):
+    ad_request = AdRequest.query.get_or_404(ad_request_id)
+    db.session.delete(ad_request)
+    db.session.commit()
+    flash('Ad request deleted successfully.', 'success')
+    return redirect(url_for('campaign_details', campaign_id=ad_request.campaign_id))
+
+@app.route('/influencer_dashboard')
+@login_required
 def influencer_dashboard():
-    # Add logic to retrieve influencer-specific data
-    return render_template('influencer_dashboard.html')
+    # Assuming `current_user` is the logged-in influencer
+    influencer = Influencer.query.filter_by(username=current_user.username).first_or_404()
+
+    # Fetch active campaigns the influencer is part of
+    active_campaigns = Campaign.query.join(AdRequest).filter(
+        AdRequest.influencer_id == influencer.id,
+        AdRequest.status == 'Accepted'
+    ).all()
+
+    # Fetch pending ad requests
+    pending_requests = AdRequest.query.filter_by(
+        influencer_id=influencer.id,
+        status='Pending'
+    ).all()
+
+    return render_template(
+        'influencer_dashboard.html',
+        influencer=influencer,
+        active_campaigns=active_campaigns,
+        pending_requests=pending_requests,
+    )
+
+@app.route('/search_campaigns', methods=['GET', 'POST'])
+@login_required
+def search_campaigns():
+    search_results = []
+    if request.method == 'POST':
+        search_query = request.form.get('search_query')
+
+        # Search for public campaigns matching the search query
+        search_results = Campaign.query.filter(
+            Campaign.visibility == 'Public',  # Ensure only public campaigns are shown
+            db.or_(
+                Campaign.name.ilike(f'%{search_query}%'),
+                Campaign.description.ilike(f'%{search_query}%'),
+                Campaign.niche.ilike(f'%{search_query}%')
+            )
+        ).all()
+
+    return render_template('search_campaigns.html', search_results=search_results)
+
+@app.route('/campaign_details/<int:campaign_id>', methods=['GET'])
+@login_required
+def campaign_details_influencer(campaign_id):
+    campaign = Campaign.query.get_or_404(campaign_id)
+    
+    return render_template('campaign_details_influencer.html', campaign=campaign)
+
+@app.route('/create_ad_request/<int:campaign_id>', methods=['POST'])
+@login_required
+def create_ad_request(campaign_id):
+    campaign = Campaign.query.get_or_404(campaign_id)
+
+    # Ensure the campaign is public
+    if campaign.visibility != 'Public':
+        flash("You cannot create an ad request for this campaign.", "danger")
+        return redirect(url_for('search_campaigns'))
+
+    requirements = request.form.get('requirements')
+    payment_amount = request.form.get('payment_amount', type=float)
+    message = request.form.get('message')
+
+    # Create a new ad request
+    ad_request = AdRequest(
+        campaign_id=campaign.id,
+        influencer_id=current_user.id,
+        requirements=requirements,
+        payment_amount=payment_amount,
+        status='Pending',
+        message=message
+    )
+    db.session.add(ad_request)
+    db.session.commit()
+
+    flash('Ad request created successfully!', 'success')
+    return redirect(url_for('campaign_details_influencer', campaign_id=campaign.id))
+
+
 
 @app.route('/campaigns')
 def all_campaigns():
@@ -226,10 +323,7 @@ def ad_requests():
     # Add logic to retrieve ad requests
     return render_template('ad_requests.html')
 
-@app.route('/ad_requests/<int:ad_request_id>')
-def ad_request_details(ad_request_id):
-    # Add logic to retrieve ad request details
-    return render_template('ad_request_details.html')
+
 
 @app.route('/profile/influencer')
 def influencer_profile():
